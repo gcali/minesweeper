@@ -1,0 +1,8 @@
+*.[oa]
+*.log
+*.tmp
+*.swp
+*~
+log
+campo_ex
+tags
