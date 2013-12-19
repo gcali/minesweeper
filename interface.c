@@ -218,6 +218,8 @@ int interface_grid_next_move(int *row, int *col, int *flag_or_reveal,
   int c;
   int bombs;
 
+  int get_next_c;
+
   WINDOW *wgrid;
   WINDOW *wcont_help;
 
@@ -234,9 +236,14 @@ int interface_grid_next_move(int *row, int *col, int *flag_or_reveal,
           c != ' ' && c != 'r' && c != 'f' &&
           c != 'd' && c != 'q' && c != 'x')
   */
+
+  get_next_c = 1;
   do
   {
-    c = getch();
+    if (get_next_c)
+      c = getch();
+    else
+      get_next_c = 1;
     switch (c)
     {
       case 'y':
@@ -277,6 +284,7 @@ int interface_grid_next_move(int *row, int *col, int *flag_or_reveal,
 
       case 'r':
         c = getch();
+        get_next_c = 0;
         break;
 
       case 'i':
