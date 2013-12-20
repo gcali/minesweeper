@@ -1,33 +1,34 @@
 CC=gcc -std=gnu89 -pedantic -Wall -Wno-unused-but-set-variable
-CFLAGS=-c -g
+CFLAGS=-g
 LDFLAGS=-lncurses
 
-NAME=campo_ex
-OBJECTS=error.o interface.o utilities.o main.o grid.o
+SDIR=src
+ODIR=obj
+VPATH:=$(SDIR)
 
-DEBUG_NAME=debug
-DEBUG_OBJECTS=error.o interface.o utilities.o debug.o
+DEBUG_NAME=debug.out
+DEBUG_EXCLUSIVE_OBJECTS := $(addprefix $(ODIR)/, debug.o)
+DEBUG_OBJECTS := $(DEBUG_EXCLUSIVE_OBJECTS)
+
+NAME=campo_ex
+OBJECTS := $(patsubst $(SDIR)/%.c,$(ODIR)/%.o,$(wildcard $(SDIR)/*.c))
+OBJECTS := $(filter-out $(DEBUG_EXCLUSIVE_OBJECTS),$(OBJECTS))
+
 
 $(NAME): $(OBJECTS)
 	$(CC) -o $(NAME) $(OBJECTS) $(LDFLAGS)
 
-main.o: main.c interface.h grid.h
-	$(CC) $(CFLAGS) main.c
+$(ODIR)/%.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
 
-debug.o: debug.c interface.h
-	$(CC) $(CFLAGS) debug.c
+$(ODIR)/%o.: error.h
 
-error.o: error.c error.h
-	$(CC) $(CFLAGS) error.c
-
-utilities.o: utilities.c utilities.h
-	$(CC) $(CFLAGS) utilities.c
-
-interface.o: interface.c interface.h error.h utilities.h
-	$(CC) $(CFLAGS) interface.c
-
-grid.o: grid.c grid.h error.h
-	$(CC) $(CFLAGS) grid.c
+$(ODIR)/main.o: interface.h grid.h
+$(ODIR)/debug.o: interface.h
+#$(ODIR)/error.o:
+$(ODIR)/utilities.o: utilities.h
+$(ODIR)/interface.o: interface.h utilities.h
+$(ODIR)/grid.o: grid.h
 
 .PHONY: clean
 clean:
