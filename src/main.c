@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "interface.h"
 #include "error.h"
 #include "grid.h"
@@ -51,29 +52,11 @@ int main(int argc, char *argv[])
           break;
       */
       }
-    /*
-      {
-        char *result_string;
-
-        if (retval == INTERFACE_EXIT)
-          result_string = "Gioco Abbandonato";
-        else if (result == GRIDS_EXPLODED)
-          result_string = "Sconfitta";
-        else
-          result_string = "Vittoria";
-
-        interface_print_result(result_string);
-      }
-    */
     }
     else if (result == 1)
     {
       /*Help*/
       interface_print_help(help_screen_string);
-    /*
-      interface_print_help("Schermata\n"
-                           "di aiuto");
-    */
     }
     else
       break;
@@ -145,6 +128,8 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
   int choice;
   int game_ended = 0;
   int grid_initialized = 0;
+  time_t start_time;
+  time_t end_time;
 
   grid_create(&grid, row_dim, col_dim);
 /*
@@ -156,6 +141,7 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
 
   curr_row = row_dim / 2;
   curr_col = col_dim / 2;
+  time(&start_time);
 
   do
   {
@@ -189,9 +175,11 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
     }
   } while (!game_ended);
 
+  time(&end_time);
+
   interface_reset_screen();
 
-  interface_result_screen(grid, row_dim, col_dim, *result);
+  interface_result_screen(grid, row_dim, col_dim, *result, end_time - start_time);
 
   grid_destroy(&grid, row_dim, col_dim);
 

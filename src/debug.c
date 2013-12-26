@@ -1,37 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "interface.h"
-#include "error.h"
+#include "highscore.h"
 
 int main(int argc, char *argv[])
 {
-  int retval;
-  int result;
-  char *choices[] = { "Nuovo Gioco", "Aiuto", "Esci" };
-  int lines;
+  Score array[10];
+  unsigned int dim = sizeof(array) / sizeof(*array);
+  unsigned int i;
 
-  lines = sizeof(choices) / sizeof(*choices);
+  highscore_init();
 
-  retval = interface_init();
-  return_if_error(retval);
-  retval = interface_main_screen(&result);
-  interface_close_down();
-
-  printf("%d - %d\n", retval, result);
-  getchar();
-
-  retval = interface_init();
-  return_if_error(retval);
-  retval = interface_screen_choices(&result, choices, lines, "Titolo");
-  if (result == 0)
+  highscore_print_debug();
+  highscore_get_highscores(array, &dim);
+  for (i = 0; i < dim; i++)
   {
-    char *choices[] = { "Singolo Giocatore", "Multigiocatore" };
-    int lines = sizeof(choices) / sizeof(*choices);
-    retval = interface_screen_choices(&result, choices, lines, "Numero giocatori");
+    printf("%d | %s\n", array[i].time, array[i].name);
+    free(array[i].name);
   }
-  interface_close_down();
 
-  printf("%d - %d\n", retval, result);
+  highscore_save();
+
+  highscore_close_down();
 
   return 0;
 }

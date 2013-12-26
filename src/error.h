@@ -15,6 +15,7 @@
 #define WRONG_INPUT INVALID_INPUT
 #define OOR (64)
 #define COLLISION (128)
+#define END_OF_FILE (256)
 
 /*pay *a lot* of attention when using this macro; it's just to save a
 few ketstrokes*/

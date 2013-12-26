@@ -24,6 +24,8 @@ static WINDOW *debug;
 
 #define DEBUG 0
 
+#define NO_TIME ((time_t) 0)
+
 #define interface_cell_get_number(cell) ((cell) % 16)
 
 /*
@@ -340,7 +342,7 @@ int interface_grid_next_move(int *row, int *col, int *flag_or_reveal,
   return OK;
 }
 
-int interface_result_screen(Grid grid, int row_dim, int col_dim, int result)
+int interface_result_screen(Grid grid, int row_dim, int col_dim, int result, time_t time)
 {
   /*result can be GRID_EXPLODED or GRIDS_WON*/
   Grid result_grid;
@@ -359,6 +361,16 @@ int interface_result_screen(Grid grid, int row_dim, int col_dim, int result)
 
   werase(wresult);
   wrefresh(wresult);
+  if ((int) time != 0)
+  {
+    wprintw(wresult, "Time: %d\n", (int)time);
+    wrefresh(wresult);
+    
+    getch();
+    werase(wresult);
+    wrefresh(wresult);
+  }
+
   delwin(wresult);
 
   return OK;
@@ -682,7 +694,7 @@ static void interface_sigwinch_adjust(int sig)
 
 static int interface_print_cheat(WINDOW *wgrid, Grid grid, int row_dim, int col_dim)
 {
-  interface_result_screen(grid, row_dim, col_dim, GRIDS_EXPLODED);
+  interface_result_screen(grid, row_dim, col_dim, GRIDS_EXPLODED, NO_TIME);
   return 0;
 }
   

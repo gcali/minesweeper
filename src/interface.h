@@ -2,6 +2,7 @@
 #define INTERFACE_H
 
 #include <ncurses.h>
+#include <time.h>
 #include "grid.h"
 
 #define INTERFACE_EXIT -1
@@ -14,7 +15,7 @@ int interface_screen_choices(int *result,
                              char *title);
 int interface_grid_next_move(int *row, int *col, int *flag_or_reveal,
                              Grid grid, int row_dim, int col_dim);
-int interface_result_screen(Grid grid, int row_dim, int col_dim, int result);
+int interface_result_screen(Grid grid, int row_dim, int col_dim, int result, time_t time);
 int interface_print_help(char *help_string);
 
 int interface_print_debug(char *string);

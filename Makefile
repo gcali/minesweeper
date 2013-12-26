@@ -8,12 +8,15 @@ VPATH:=$(SDIR)
 
 DEBUG_NAME=debug.out
 DEBUG_EXCLUSIVE_OBJECTS := $(addprefix $(ODIR)/, debug.o)
-DEBUG_OBJECTS := $(DEBUG_EXCLUSIVE_OBJECTS)
+DEBUG_OBJECTS = misc.o highscore.o utilities.o error.o
+DEBUG_OBJECTS := $(addprefix $(ODIR)/, $(DEBUG_OBJECTS))
+DEBUG_OBJECTS := $(DEBUG_EXCLUSIVE_OBJECTS) $(DEBUG_OBJECTS)
 
 NAME=campo_ex
 OBJECTS := $(patsubst $(SDIR)/%.c,$(ODIR)/%.o,$(wildcard $(SDIR)/*.c))
 OBJECTS := $(filter-out $(DEBUG_EXCLUSIVE_OBJECTS),$(OBJECTS))
 
+INSTALL_PATH=/usr/local/bin/ 
 
 $(NAME): $(OBJECTS)
 	$(CC) -o $(NAME) $(OBJECTS) $(LDFLAGS)
@@ -21,7 +24,8 @@ $(NAME): $(OBJECTS)
 $(ODIR)/%.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(ODIR)/%o.: error.h
+
+$(ODIR)/%.o: error.h
 
 $(ODIR)/main.o: interface.h grid.h
 $(ODIR)/debug.o: interface.h
@@ -29,10 +33,16 @@ $(ODIR)/debug.o: interface.h
 $(ODIR)/utilities.o: utilities.h
 $(ODIR)/interface.o: interface.h utilities.h
 $(ODIR)/grid.o: grid.h
+$(ODIR)/highscore.o: highscore.h misc.h utilities.h
+$(ODIR)/misc.o: misc.h
+
+.PHONY: install
+install: $(NAME)
+	cp $(NAME) $(INSTALL_PATH) 
 
 .PHONY: clean
 clean:
-	@-rm -f $(OBJECTS) $(NAME) $(DEBUG_NAME) $(DEBUG_OBJECTS)
+	@-rm -f $(OBJECTS) $(NAME) $(DEBUG_NAME) $(DEBUG_EXCLUSIVE_OBJECTS)
 
 .PHONY: debug
 debug: $(DEBUG_OBJECTS)
