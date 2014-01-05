@@ -94,7 +94,7 @@ int highscore_save()
   work_list = score_list;
   while (work_list != NULL)
   {
-    fprintf(file, "%d|%s\n", work_list->score.time, work_list->score.name);
+    fprintf(file, "%d|%d|%s\n", work_list->score.id, work_list->score.time, work_list->score.name);
     work_list = work_list->next;
   }
 
@@ -123,7 +123,22 @@ int highscore_close_down()
   return OK;
 }
 
-int highscore_get_highscores(Score *array, unsigned int *nmemb)
+int highscore_destroy(Score array[], unsigned int nmemb)
+{
+  int i;
+
+  for (i = 0; i < nmemb; i++)
+    if (array[i].name != NULL)
+    {
+      free(array[i].name);
+      array[i].name = NULL;
+    }
+
+  return OK;
+}
+
+
+int highscore_get_highscores(Score *array, unsigned int *nmemb, int id)
 {
   unsigned int i;
   List work_list;
@@ -133,10 +148,14 @@ int highscore_get_highscores(Score *array, unsigned int *nmemb)
 
   while (i < *nmemb && work_list != NULL)
   {
-    array[i].time = work_list->score.time;
-    array[i].name = malloc(sizeof(char) * (strlen(work_list->score.name) + 1));
-    strcpy(array[i].name, work_list->score.name);
-    i++;
+    if (work_list->score.id == id)
+    {
+      array[i].time = work_list->score.time;
+      array[i].id = work_list->score.id;
+      array[i].name = malloc(sizeof(char) * (strlen(work_list->score.name) + 1));
+      strcpy(array[i].name, work_list->score.name);
+      i++;
+    }
     work_list = work_list->next;
   }
 
@@ -146,9 +165,13 @@ int highscore_get_highscores(Score *array, unsigned int *nmemb)
   return OK;
 }
 
-int highscore_add_score(int time, char *name)
+int highscore_add_score(int id, int time, char *name)
 {
   Score score;
+  #if 0
+  fprintf(stderr, "%d - %d\n", id, time);
+  #endif
+  score.id = id;
   score.time = time;
   score.name = name;
   return highscore_add_score_struct(score);
@@ -164,9 +187,10 @@ int highscore_add_score_struct(Score score)
   while (*work_list != NULL && (*precedence)((*work_list)->score.time, score.time))
   #endif
   /*FIXME*/
-  while (*work_list != NULL && (*work_list)->score.time <= score.time)
+  while (*work_list != NULL && (*work_list)->score.id <= score.id && (*work_list)->score.time <= score.time)
     work_list = &((*work_list)->next);
   aux_list = malloc(sizeof(*aux_list));
+  aux_list->score.id = score.id;
   aux_list->score.time = score.time;
   aux_list->score.name = malloc(sizeof(char) * (strlen(score.name) + 1));
   strcpy(aux_list->score.name, score.name);
@@ -197,7 +221,8 @@ int highscore_print_debug()
 /*internal function definitions*/
 static int highscore_import_file(FILE *file)
 {
-  int num;
+  int time;
+  int id;
   int found;
   int offset;
   char *string;
@@ -216,14 +241,24 @@ static int highscore_import_file(FILE *file)
 
     offset = 0; 
     get_up_until(&string, &found, line, &offset, separator_arr, separator_dim);
-    printf("num string: %s\n", string);
-    sscanf(string, "%d", &num);
-    printf("num: %d\n", num);
+    sscanf(string, "%d", &id);
+    free(string);
+
+    get_up_until(&string, &found, line, &offset, separator_arr, separator_dim);
+    #if 0
+    printf("time string: %s\n", string);
+    #endif
+    sscanf(string, "%d", &time);
+    #if 0
+    printf("time: %d\n", time);
+    #endif
     free(string);
 
     get_up_until(&string, &found, line, &offset, separator_arr, separator_dim); 
+    #if 0
     printf("name string: %s\n", string);
-    highscore_add_score(num, string);
+    #endif
+    highscore_add_score(id, time, string);
     free(string);
 
     free(line);

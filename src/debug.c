@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "highscore.h"
+#include "interface.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,10 +16,15 @@ int main(int argc, char *argv[])
   for (i = 0; i < dim; i++)
   {
     printf("%d | %s\n", array[i].time, array[i].name);
-    free(array[i].name);
   }
 
   highscore_save();
+
+  interface_init();
+  interface_print_scores(array, dim);
+  highscore_destroy(array, dim);
+
+  interface_close_down();
 
   highscore_close_down();
 

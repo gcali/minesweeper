@@ -7,6 +7,7 @@
 
 typedef struct ScoreStruct
 {
+  int id;
   int time;
   char *name;
 } Score;
@@ -14,9 +15,10 @@ typedef struct ScoreStruct
 int highscore_init();
 int highscore_save();
 int highscore_close_down();
+int highscore_destroy(Score array[], unsigned int nmemb);
 
-int highscore_get_highscores(Score *array, unsigned int *nmemb);
-int highscore_add_score(int time, char *name);
+int highscore_get_highscores(Score *array, unsigned int *nmemb, int id);
+int highscore_add_score(int id, int time, char *name);
 int highscore_add_score_struct(Score score);
 
 int highscore_print_debug();

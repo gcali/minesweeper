@@ -315,7 +315,12 @@ int grid_get_bombs_from_dimension(int *bombs, int row_dim, int col_dim)
 /*
     *bombs = 78;
 */
+#if 0
     *bombs = 52;
+#endif
+    *bombs = 60;
+  else if (row_dim == 2)
+    *bombs = 0;
 
   return 0;
 }

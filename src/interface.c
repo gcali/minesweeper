@@ -61,6 +61,7 @@ static int interface_w_print_grid_line(WINDOW *wgrid, int col_dim, Grid grid, in
 static int interface_w_print_cursor(WINDOW *wgrid, Grid grid, int row, int col);
 static int interface_w_set_print_contextual_help(WINDOW **wcont_help, int col_dim, int bombs);
 static int interface_print_cheat(WINDOW *wgrid, Grid grid, int row_dim, int col_dim);
+static int interface_w_print_scores(WINDOW *win, Score array[], int dim);
 
 static void interface_sigwinch_adjust(int sig);
 
@@ -358,10 +359,9 @@ int interface_result_screen(Grid grid, int row_dim, int col_dim, int result, tim
 
   grid_destroy(&result_grid, row_dim, col_dim);
 
-
   werase(wresult);
   wrefresh(wresult);
-  if ((int) time != 0)
+  if (time != NO_TIME)
   {
     wprintw(wresult, "Time: %d\n", (int)time);
     wrefresh(wresult);
@@ -393,6 +393,22 @@ int interface_print_help(char *help_string)
   return OK;
 }
 
+int interface_print_scores(Score array[], unsigned int dim)
+{
+  WINDOW *wscores;
+
+  wscores = newwin(LINES - interface_up_margin, COLS - interface_left_margin,
+                   interface_up_margin, interface_left_margin);
+  
+  interface_w_print_scores(wscores, array, dim); 
+  getch();
+
+  wclear(wscores);
+  wrefresh(wscores);
+  delwin(wscores);
+
+  return OK;
+}
 /*Internal functions definitions*/
 
 static int interface_w_create_list(WINDOW **wlist, int wlist_start,
@@ -698,3 +714,17 @@ static int interface_print_cheat(WINDOW *wgrid, Grid grid, int row_dim, int col_
   return 0;
 }
   
+static int interface_w_print_scores(WINDOW *win, Score array[], int dim)
+{
+  int i;
+
+  wmove(win, 0, 0);
+  wprintw(win, "Highscores\n");
+  wprintw(win, "\n");
+  for (i = 0; i < dim; i++)
+    wprintw(win, "%2d) %s\t%4d\n", i+1, array[i].name, array[i].time);
+
+  wrefresh(win);
+
+  return OK;
+} 

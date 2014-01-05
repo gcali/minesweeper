@@ -2,6 +2,7 @@
 *.log
 *.tmp
 *.swp
+*.out
 *~
 log
 campo_ex

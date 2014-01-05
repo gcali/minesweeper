@@ -5,6 +5,7 @@
 #include "error.h"
 #include "grid.h"
 
+
 static char *help_screen_string =
                "Usare i tasti freccia o 'h','j','k','l'\n"
                "per muoversi, 'f' per inserire una bandiera,\n"
@@ -16,6 +17,8 @@ static char *help_screen_string =
                "griglia eccessiva rispetto alle dimensioni del terminale\n"
                "l'interfaccia potrebbe non funzionare correttamente";
 
+#define SCORES_DIM 10
+
 int new_game(int *result, int row_dim, int col_dim, int bombs);
 int choose_dimension_bombs(int *row_dim, int *col_dim, int *bombs);
 
@@ -23,6 +26,8 @@ int main(int argc, char *argv[])
 {
   int retval;
   int result;
+
+  highscore_init();
 
   retval = interface_init();
   return_if_error(retval);
@@ -64,6 +69,14 @@ int main(int argc, char *argv[])
 
   interface_close_down();
 
+#if 0
+  /*uncomment only if highscore starts to use dynamic memory allocation
+    for the name part*/
+  highscore_destroy(scores, scores_dim);
+#endif
+  highscore_save();
+  highscore_close_down();
+
   return 0;
 }
 
@@ -100,8 +113,13 @@ int choose_dimension_bombs(int *row_dim, int *col_dim, int *bombs)
 
   if (result == 0)
   {
+  #if 1
     *row_dim = 8;
     *col_dim = 8;
+  #else
+    *row_dim =
+    *col_dim = 2;
+  #endif
   }
   else if (result == 1)
   {
@@ -130,6 +148,14 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
   int grid_initialized = 0;
   time_t start_time;
   time_t end_time;
+  int score_id;
+  Score scores[SCORES_DIM];
+  unsigned int scores_dim = SCORES_DIM;
+
+  score_id = row_dim * 100 + col_dim;
+#if 0
+  fprintf(stderr, "score_id: %d\n", score_id);
+#endif
 
   grid_create(&grid, row_dim, col_dim);
 /*
@@ -180,6 +206,15 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
   interface_reset_screen();
 
   interface_result_screen(grid, row_dim, col_dim, *result, end_time - start_time);
+
+  if (*result == GRIDS_WON)
+  {
+    highscore_add_score(score_id, end_time - start_time, "\0");
+    scores_dim = SCORES_DIM;
+    highscore_get_highscores(scores, &scores_dim, score_id);
+    interface_print_scores(scores, scores_dim);
+  }
+
 
   grid_destroy(&grid, row_dim, col_dim);
 
