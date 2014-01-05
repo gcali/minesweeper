@@ -213,6 +213,7 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
     scores_dim = SCORES_DIM;
     highscore_get_highscores(scores, &scores_dim, score_id);
     interface_print_scores(scores, scores_dim);
+    highscore_destroy(scores, scores_dim);
   }
 
 

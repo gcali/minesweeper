@@ -58,7 +58,9 @@ int highscore_init()
   if (scores_file == NULL)
     highscore_init_scores_file_string();
 
+#if 0
   printf("scores_file: %s\n", scores_file);
+#endif
 
   highscore_stream = fopen(scores_file, "r");
   if (highscore_stream == NULL)
@@ -237,7 +239,9 @@ static int highscore_import_file(FILE *file)
         free(line);
       break;
     }
+#if 0
     printf("line: %s\n", line);
+#endif
 
     offset = 0; 
     get_up_until(&string, &found, line, &offset, separator_arr, separator_dim);
@@ -293,7 +297,9 @@ static int highscore_init_scores_file_string()
 
   sprintf(path, "%s%s", home, HIGHSCORE_FILE);
 
+  #if 0
   printf("path: %s\n", path);
+  #endif
   scores_file = path;
 
   return OK;
