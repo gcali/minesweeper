@@ -7,6 +7,7 @@
 #include "timer.h"
 
 
+#if 0
 static char *help_screen_string =
                "Usare i tasti freccia o 'h','j','k','l'\n"
                "per muoversi, 'f' per inserire una bandiera,\n"
@@ -17,6 +18,17 @@ static char *help_screen_string =
                "Nota: nel caso in cui venga scelta una dimensione della\n"
                "griglia eccessiva rispetto alle dimensioni del terminale\n"
                "l'interfaccia potrebbe non funzionare correttamente";
+#endif
+static char *help_screen_string =
+               "Use the arrow keys or 'h', 'j', 'k', 'l' to move,\n"
+               "'f' to flag the selected cell, Enter or 'rr' to uncover\n"
+               "the selected cell and 'q' or 'x' to go back to the previous\n"
+               "screen or quit the program.\n"
+               "\n"
+               "Important: if the selected board size is too large\n"
+               "for the screen, the interface will probably not work\n"
+               "correctly. The only solution is to close and reopen\n"
+               "the program.\n";
 
 #define SCORES_DIM 10
 
@@ -37,9 +49,12 @@ int main(int argc, char *argv[])
   {
     interface_reset_screen();
     {
+      #if 0
       char *(choices[]) = {"Nuovo Gioco", "Aiuto", "Esci"};
+      #endif
+      char *(choices[]) = {"New Game", "Help", "Exit"};
       int number_of_choices = sizeof(choices) / sizeof(*choices);
-      char *title = "Campo Minato";
+      char *title = "MineSweeper";
 
       retval = interface_screen_choices(&result, choices, number_of_choices, title);
     }
@@ -86,10 +101,10 @@ int choose_dimension_bombs(int *row_dim, int *col_dim, int *bombs)
 {
   int result;
   int retval;
-  char *(choices[]) = { "Piccolo\t (08x08)", "Medio\t (12x12)", "Grande\t (16x24)" };
+  char *(choices[]) = { "Small\t (08x08)", "Medium\t (12x12)", "Large\t (16x24)" };
   int lines = sizeof(choices) / sizeof(*choices);
 
-  retval = interface_screen_choices(&result, choices, lines, "Scegli la dimensione");
+  retval = interface_screen_choices(&result, choices, lines, "Choose the size");
   return_if_error(retval);
 
 /*

@@ -382,7 +382,7 @@ int interface_print_help(char *help_string)
 
   whelp = newwin(LINES - interface_up_margin, COLS - interface_left_margin, interface_up_margin, interface_left_margin);
 
-  wprintw(whelp, "Aiuto\n\n");
+  wprintw(whelp, "Help\n\n");
 
   wprintw(whelp, "%s", help_string);
   wrefresh(whelp);
@@ -535,7 +535,7 @@ static int interface_w_set_print_contextual_help(WINDOW **wcont_help, int col_di
   wprintw(*wcont_help, text);
   wprintw(*wcont_help, "\n\n\nBombe: %02d\n", bombs);
   */
-  wprintw(*wcont_help, "Bombe: %02d\n", bombs);
+  wprintw(*wcont_help, "Bombs: %02d\n", bombs);
 
   return OK;
 }
