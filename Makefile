@@ -7,7 +7,7 @@ ODIR=obj
 VPATH:=$(SDIR)
 
 DEBUG_NAME=debug.out
-DEBUG_EXCLUSIVE_OBJECTS := debug.o
+DEBUG_EXCLUSIVE_OBJECTS := debug.o timer.o
 DEBUG_EXCLUSIVE_OBJECTS := $(addprefix $(ODIR)/, $(DEBUG_EXCLUSIVE_OBJECTS))
 DEBUG_OBJECTS := misc.o highscore.o utilities.o error.o interface.o grid.o
 DEBUG_OBJECTS := $(addprefix $(ODIR)/, $(DEBUG_OBJECTS))
@@ -36,6 +36,7 @@ $(ODIR)/interface.o: interface.h utilities.h highscore.h
 $(ODIR)/grid.o: grid.h
 $(ODIR)/highscore.o: highscore.h misc.h utilities.h
 $(ODIR)/misc.o: misc.h
+$(ODIR)/timer.o: timer.h
 
 .PHONY: install
 install: $(NAME)

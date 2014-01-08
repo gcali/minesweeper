@@ -2,9 +2,21 @@
 #include <stdlib.h>
 #include "highscore.h"
 #include "interface.h"
+#include "timer.h"
+
+#if 0
+#define DEBUG_SCORES
+#endif
+#define DEBUG_TIMER
 
 int main(int argc, char *argv[])
 {
+#ifdef DEBUG_TIMER
+  long int seconds;
+  long int mseconds;
+  int i;
+#endif
+#ifdef DEBUG_SCORE 
   Score array[10];
   unsigned int dim = sizeof(array) / sizeof(*array);
   unsigned int i;
@@ -28,6 +40,17 @@ int main(int argc, char *argv[])
 
   highscore_close_down();
 
+#endif
+
+#ifdef DEBUG_TIMER
+  timer_reset_time();
+  for (i = 0; i < 10000; i++)
+    printf(".");
+  putchar('\n');
+  timer_get_elapsed_time(&seconds, &mseconds);
+  printf("sec: %ld msec: %ld\n", seconds, mseconds);
+#endif
+  
   return 0;
 }
   
