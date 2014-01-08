@@ -47,7 +47,7 @@ static int highscore_init_scores_file_string();
 static int highscore_import_file(FILE *file);
 static int highscore_remove_first();
 static int highscore_reverse_list();
-static int highscore_standard_precedence(int a, int b);
+static int highscore_std_cmp(Time a, Time b);
 static int highscore_import_precedence(int a, int b);
 
 
@@ -72,7 +72,7 @@ int highscore_init()
 
 #if 0
   if (precedence == NULL)
-    precedence = highscore_standard_precedence;
+    precedence = highscore_std_cmp;
 #endif
 
   return 0;
@@ -96,12 +96,15 @@ int highscore_save()
   work_list = score_list;
   while (work_list != NULL)
   {
-    fprintf(file, "%d|%d|%s\n", work_list->score.id, work_list->score.time, work_list->score.name);
+    fprintf(file, "%d|%ld|%ld|%s\n", work_list->score.id,
+                                   work_list->score.time.sec,
+                                   work_list->score.time.msec,
+                                   work_list->score.name);
     work_list = work_list->next;
   }
 
 #if 0
-  precedence = highscore_standard_precedence;
+  precedence = highscore_std_cmp;
   highscore_reverse_list();
 #endif
 
@@ -167,7 +170,7 @@ int highscore_get_highscores(Score *array, unsigned int *nmemb, int id)
   return OK;
 }
 
-int highscore_add_score(int id, int time, char *name)
+int highscore_add_score(int id, Time time, char *name)
 {
   Score score;
   #if 0
@@ -189,7 +192,12 @@ int highscore_add_score_struct(Score score)
   while (*work_list != NULL && (*precedence)((*work_list)->score.time, score.time))
   #endif
   /*FIXME*/
+    #if 0
   while (*work_list != NULL && (*work_list)->score.id <= score.id && (*work_list)->score.time <= score.time)
+    #endif
+  while (*work_list != NULL &&
+         (*work_list)->score.id <= score.id &&
+         highscore_std_cmp((*work_list)->score.time, score.time) <= 0)
     work_list = &((*work_list)->next);
   aux_list = malloc(sizeof(*aux_list));
   aux_list->score.id = score.id;
@@ -211,7 +219,10 @@ int highscore_print_debug()
   i = 0;
   while (work_list != NULL)
   {
-    printf("%02d) %d | %s\n", ++i, work_list->score.time, work_list->score.name);
+    printf("%02d) %ld.%ld | %s\n", ++i,
+                                 work_list->score.time.sec,
+                                 work_list->score.time.msec,
+                                 work_list->score.name);
     work_list = work_list->next;
   }
 
@@ -223,7 +234,7 @@ int highscore_print_debug()
 /*internal function definitions*/
 static int highscore_import_file(FILE *file)
 {
-  int time;
+  Time time;
   int id;
   int found;
   int offset;
@@ -252,7 +263,17 @@ static int highscore_import_file(FILE *file)
     #if 0
     printf("time string: %s\n", string);
     #endif
-    sscanf(string, "%d", &time);
+    sscanf(string, "%ld", &(time.sec));
+    #if 0
+    printf("time: %d\n", time);
+    #endif
+    free(string);
+
+    get_up_until(&string, &found, line, &offset, separator_arr, separator_dim);
+    #if 0
+    printf("time string: %s\n", string);
+    #endif
+    sscanf(string, "%ld", &(time.msec));
     #if 0
     printf("time: %d\n", time);
     #endif
@@ -321,9 +342,14 @@ static int highscore_reverse_list()
   return OK;
 }
 
-static int highscore_standard_precedence(int a, int b)
+static int highscore_std_cmp(Time a, Time b)
 {
-  return (a < b || a == b);
+  if (a.sec < b.sec)
+    return -1;
+  else if (a.sec > b.sec)
+    return 1;
+  else
+    return a.msec - b.msec;
 }
 
 static int highscore_import_precedence(int a, int b)

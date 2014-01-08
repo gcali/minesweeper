@@ -4,10 +4,10 @@
 #include "interface.h"
 #include "timer.h"
 
+#define DEBUG_SCORE
 #if 0
-#define DEBUG_SCORES
-#endif
 #define DEBUG_TIMER
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -24,10 +24,10 @@ int main(int argc, char *argv[])
   highscore_init();
 
   highscore_print_debug();
-  highscore_get_highscores(array, &dim);
+  highscore_get_highscores(array, &dim, 808);
   for (i = 0; i < dim; i++)
   {
-    printf("%d | %s\n", array[i].time, array[i].name);
+    printf("%ld.%ld | %s\n", array[i].time.sec, array[i].time.msec, array[i].name);
   }
 
   highscore_save();

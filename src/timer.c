@@ -22,9 +22,11 @@ int timer_get_elapsed_time(long int *seconds, long int *milliseconds)
 {
   struct timeval curr_time;
   gettimeofday(&curr_time, NULL);
+#if 0
   printf("set_time: %ld %ld\n"
          "curr_time: %ld %ld\n", set_time.tv_sec, set_time.tv_usec,
                                  curr_time.tv_sec, curr_time.tv_usec);
+#endif
 
   timer_distance(set_time, curr_time, seconds, milliseconds);
 

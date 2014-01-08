@@ -7,9 +7,9 @@ ODIR=obj
 VPATH:=$(SDIR)
 
 DEBUG_NAME=debug.out
-DEBUG_EXCLUSIVE_OBJECTS := debug.o timer.o
+DEBUG_EXCLUSIVE_OBJECTS := debug.o
 DEBUG_EXCLUSIVE_OBJECTS := $(addprefix $(ODIR)/, $(DEBUG_EXCLUSIVE_OBJECTS))
-DEBUG_OBJECTS := misc.o highscore.o utilities.o error.o interface.o grid.o
+DEBUG_OBJECTS := misc.o highscore.o utilities.o error.o interface.o grid.o timer.o
 DEBUG_OBJECTS := $(addprefix $(ODIR)/, $(DEBUG_OBJECTS))
 DEBUG_OBJECTS := $(DEBUG_EXCLUSIVE_OBJECTS) $(DEBUG_OBJECTS)
 

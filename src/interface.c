@@ -343,7 +343,7 @@ int interface_grid_next_move(int *row, int *col, int *flag_or_reveal,
   return OK;
 }
 
-int interface_result_screen(Grid grid, int row_dim, int col_dim, int result, time_t time)
+int interface_result_screen(Grid grid, int row_dim, int col_dim, int result, Time time)
 {
   /*result can be GRID_EXPLODED or GRIDS_WON*/
   Grid result_grid;
@@ -361,9 +361,9 @@ int interface_result_screen(Grid grid, int row_dim, int col_dim, int result, tim
 
   werase(wresult);
   wrefresh(wresult);
-  if (time != NO_TIME)
+  if (time.sec != NO_TIME || time.msec != NO_TIME)
   {
-    wprintw(wresult, "Time: %d\n", (int)time);
+    wprintw(wresult, "Time: %ld.%03ld\n", time.sec, time.msec);
     wrefresh(wresult);
     
     getch();
@@ -710,7 +710,10 @@ static void interface_sigwinch_adjust(int sig)
 
 static int interface_print_cheat(WINDOW *wgrid, Grid grid, int row_dim, int col_dim)
 {
-  interface_result_screen(grid, row_dim, col_dim, GRIDS_EXPLODED, NO_TIME);
+  Time time;
+  time.sec = NO_TIME;
+  time.msec = NO_TIME;
+  interface_result_screen(grid, row_dim, col_dim, GRIDS_EXPLODED, time);
   return 0;
 }
   
@@ -722,7 +725,7 @@ static int interface_w_print_scores(WINDOW *win, Score array[], int dim)
   wprintw(win, "Highscores\n");
   wprintw(win, "\n");
   for (i = 0; i < dim; i++)
-    wprintw(win, "%2d) %s\t%4d\n", i+1, array[i].name, array[i].time);
+    wprintw(win, "%2d) %s\t%4ld.%03ld\n", i+1, array[i].name, array[i].time.sec, array[i].time.msec);
 
   wrefresh(win);
 

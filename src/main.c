@@ -4,6 +4,7 @@
 #include "interface.h"
 #include "error.h"
 #include "grid.h"
+#include "timer.h"
 
 
 static char *help_screen_string =
@@ -148,6 +149,7 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
   int grid_initialized = 0;
   time_t start_time;
   time_t end_time;
+  Time time;
   int score_id;
   Score scores[SCORES_DIM];
   unsigned int scores_dim = SCORES_DIM;
@@ -167,7 +169,10 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
 
   curr_row = row_dim / 2;
   curr_col = col_dim / 2;
+  timer_reset_time();
+#if 0
   time(&start_time);
+#endif
 
   do
   {
@@ -201,15 +206,18 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
     }
   } while (!game_ended);
 
+  #if 0
   time(&end_time);
+  #endif
+  timer_get_elapsed_time(&(time.sec), &(time.msec));
 
   interface_reset_screen();
 
-  interface_result_screen(grid, row_dim, col_dim, *result, end_time - start_time);
+  interface_result_screen(grid, row_dim, col_dim, *result, time);
 
   if (*result == GRIDS_WON)
   {
-    highscore_add_score(score_id, end_time - start_time, "\0");
+    highscore_add_score(score_id, time, "\0");
     scores_dim = SCORES_DIM;
     highscore_get_highscores(scores, &scores_dim, score_id);
     interface_print_scores(scores, scores_dim);
