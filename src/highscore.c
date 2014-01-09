@@ -231,6 +231,13 @@ int highscore_print_debug()
   return OK;
 }
 
+int highscore_get_id(int *id, int row_dim, int col_dim)
+{
+  *id = row_dim * 100 + col_dim;
+
+  return OK;
+}
+
 /*internal function definitions*/
 static int highscore_import_file(FILE *file)
 {

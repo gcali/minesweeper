@@ -13,11 +13,11 @@ DEBUG_OBJECTS := misc.o highscore.o utilities.o error.o interface.o grid.o timer
 DEBUG_OBJECTS := $(addprefix $(ODIR)/, $(DEBUG_OBJECTS))
 DEBUG_OBJECTS := $(DEBUG_EXCLUSIVE_OBJECTS) $(DEBUG_OBJECTS)
 
-NAME=campo_ex
+NAME=minesweeper
 OBJECTS := $(patsubst $(SDIR)/%.c,$(ODIR)/%.o,$(wildcard $(SDIR)/*.c))
 OBJECTS := $(filter-out $(DEBUG_EXCLUSIVE_OBJECTS),$(OBJECTS))
 
-INSTALL_PATH=/usr/local/bin/ 
+INSTALL_PATH=/usr/local/bin/
 
 $(NAME): $(OBJECTS)
 	$(CC) -o $(NAME) $(OBJECTS) $(LDFLAGS)
@@ -28,7 +28,7 @@ $(ODIR)/%.o: %.c
 
 $(ODIR)/%.o: error.h
 
-$(ODIR)/main.o: interface.h grid.h
+$(ODIR)/main.o: interface.h grid.h highscore.h timer.h
 $(ODIR)/debug.o: interface.h
 #$(ODIR)/error.o:
 $(ODIR)/utilities.o: utilities.h
@@ -41,6 +41,10 @@ $(ODIR)/timer.o: timer.h
 .PHONY: install
 install: $(NAME)
 	cp $(NAME) $(INSTALL_PATH) 
+
+.PHONY: purge
+purge:
+	rm -f $(INSTALL_PATH)$(NAME)
 
 .PHONY: clean
 clean:

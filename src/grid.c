@@ -312,6 +312,7 @@ int grid_get_bombs_from_dimension(int *bombs, int row_dim, int col_dim)
   else if (row_dim == 12)
     *bombs = 26;
   else if (row_dim == 16)
+
 /*
     *bombs = 78;
 */
@@ -323,6 +324,35 @@ int grid_get_bombs_from_dimension(int *bombs, int row_dim, int col_dim)
     *bombs = 0;
 
   return 0;
+}
+
+int grid_get_data_from_id(int *row_dim, int *col_dim, int *bombs, int id)
+{
+  if (id == 0)
+  {
+    *row_dim =
+    *col_dim = 8;
+    *bombs = 10;
+  }
+  else if (id == 1)
+  {
+    *row_dim =
+    *col_dim = 12;
+    *bombs = 26;
+  }
+  else if (id == 2)
+  {
+    *row_dim = 16;
+    *col_dim = 24;
+    *bombs = 60;
+  }
+  else
+  {
+    set_error(WRONG_INPUT);
+    return ERROR;
+  }
+
+  return OK;
 }
 
 int grid_get_remaining_bombs(int *bombs, Grid grid, int row_dim, int col_dim)

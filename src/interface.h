@@ -19,6 +19,7 @@ int interface_grid_next_move(int *row, int *col, int *flag_or_reveal,
 int interface_result_screen(Grid grid, int row_dim, int col_dim, int result, Time time);
 int interface_print_help(char *help_string);
 int interface_print_scores(Score array[], unsigned int dim);
+int interface_new_score_screen(char **name, Score array[], unsigned int dim);
 
 int interface_print_debug(char *string);
 

@@ -25,6 +25,7 @@ int grid_create_result(Grid *result_grid, Grid original_grid, int row_dim, int c
 int grid_status(int *status, Grid grid, int row_dim, int col_dim);
 int grid_get_num(int *num, int cell);
 int grid_get_bombs_from_dimension(int *bombs, int row_dim, int col_dim);
+int grid_get_data_from_id(int *row_dim, int *col_dim, int *bombs, int id);
 int grid_get_remaining_bombs(int *bombs, Grid grid, int row_dim, int col_dim);
 int grid_elaborate_move(Grid grid, int curr_row, int curr_col,
                                    int row_dim, int col_dim,

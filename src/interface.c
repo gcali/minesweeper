@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include "error.h"
 #include "interface.h"
 #include "utilities.h"
@@ -409,6 +410,58 @@ int interface_print_scores(Score array[], unsigned int dim)
 
   return OK;
 }
+
+int interface_new_score_screen(char **name, Score array[], unsigned int dim)
+{
+  WINDOW *wscores;
+  WINDOW *winput;
+  int c;
+  int i;
+  char line[100];
+
+  wscores = newwin(1 + 1 + 10, COLS - interface_left_margin,
+                   interface_up_margin, interface_left_margin);
+  
+  interface_w_print_scores(wscores, array, dim); 
+
+  winput = newwin(1, COLS - interface_left_margin,
+                  interface_up_margin + 12, interface_left_margin);
+  wclear(winput);
+  i = 0;
+  while ((c = getch()) != '\r' && c != KEY_ENTER && c != '\n')
+  {
+    switch (c)
+    {
+      case KEY_BACKSPACE:
+        if (i > 0)
+        {
+          i--;
+          wmove(winput, 0, i);
+          waddch(winput, ' ');
+        }
+        break;
+
+      default:
+        if (i < COLS - interface_left_margin)
+        {
+          wmove(winput, 0, i);
+          waddch(winput, c);
+          line[i] = c;
+          i++;
+        }
+        break;
+    }
+    wrefresh(winput);
+  }
+
+  line[i] = '\0';
+  *name = malloc(sizeof(char) * (strlen(line) + 1));
+  strcpy(*name, line);
+
+  return OK;
+}
+
+                  
 /*Internal functions definitions*/
 
 static int interface_w_create_list(WINDOW **wlist, int wlist_start,
@@ -725,7 +778,7 @@ static int interface_w_print_scores(WINDOW *win, Score array[], int dim)
   wprintw(win, "Highscores\n");
   wprintw(win, "\n");
   for (i = 0; i < dim; i++)
-    wprintw(win, "%2d) %s\t%4ld.%03ld\n", i+1, array[i].name, array[i].time.sec, array[i].time.msec);
+    wprintw(win, "%2d) %3ld.%03ld %s\n", i+1, array[i].time.sec, array[i].time.msec, array[i].name);
 
   wrefresh(win);
 

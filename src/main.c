@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "highscore.h"
 #include "interface.h"
 #include "error.h"
 #include "grid.h"
@@ -34,6 +35,8 @@ static char *help_screen_string =
 
 int new_game(int *result, int row_dim, int col_dim, int bombs);
 int choose_dimension_bombs(int *row_dim, int *col_dim, int *bombs);
+int menu_highscores(void);
+int print_highscores(int score_id);
 
 int main(int argc, char *argv[])
 {
@@ -49,10 +52,7 @@ int main(int argc, char *argv[])
   {
     interface_reset_screen();
     {
-      #if 0
-      char *(choices[]) = {"Nuovo Gioco", "Aiuto", "Esci"};
-      #endif
-      char *(choices[]) = {"New Game", "Help", "Exit"};
+      char *(choices[]) = {"New Game", "Help", "Highscores", "Exit"};
       int number_of_choices = sizeof(choices) / sizeof(*choices);
       char *title = "MineSweeper";
 
@@ -79,17 +79,14 @@ int main(int argc, char *argv[])
       /*Help*/
       interface_print_help(help_screen_string);
     }
+    else if (result == 2)
+      menu_highscores();
     else
       break;
   }
 
   interface_close_down();
 
-#if 0
-  /*uncomment only if highscore starts to use dynamic memory allocation
-    for the name part*/
-  highscore_destroy(scores, scores_dim);
-#endif
   highscore_save();
   highscore_close_down();
 
@@ -101,10 +98,37 @@ int choose_dimension_bombs(int *row_dim, int *col_dim, int *bombs)
 {
   int result;
   int retval;
+  #if 0
   char *(choices[]) = { "Small\t (08x08)", "Medium\t (12x12)", "Large\t (16x24)" };
+  #endif
+  char *choices[3];
   int lines = sizeof(choices) / sizeof(*choices);
+  int i;
+
+  for (i = 0; i < 3; i++)
+  {
+    int tmp_row, tmp_col, tmp_bombs;
+    char *tmp_name;
+    choices[i] = malloc(sizeof(char) * 50);
+    retval = grid_get_data_from_id(&tmp_row, &tmp_col, &tmp_bombs, i);
+    if (i == 0)
+      tmp_name = "Small";
+    else if (i == 1)
+      tmp_name = "Medium";
+    else if (i == 2)
+      tmp_name = "Large";
+    sprintf(choices[i], "%s\t (%02dx%02d)", tmp_name, tmp_row, tmp_col);
+  }
 
   retval = interface_screen_choices(&result, choices, lines, "Choose the size");
+  return_if_error(retval);
+
+  for (i = 0; i < 3; i++)
+    free(choices[i]);
+
+  if (result == INTERFACE_EXIT)
+    return INTERFACE_EXIT;
+  retval = grid_get_data_from_id(row_dim, col_dim, bombs, result);
   return_if_error(retval);
 
 /*
@@ -126,7 +150,7 @@ int choose_dimension_bombs(int *row_dim, int *col_dim, int *bombs)
   else
     return INTERFACE_EXIT;
 */
-
+#if 0
   if (result == 0)
   {
   #if 1
@@ -151,6 +175,7 @@ int choose_dimension_bombs(int *row_dim, int *col_dim, int *bombs)
     return INTERFACE_EXIT;
 
   grid_get_bombs_from_dimension(bombs, *row_dim, *col_dim);
+#endif
 
   return OK;
 }
@@ -162,14 +187,12 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
   int choice;
   int game_ended = 0;
   int grid_initialized = 0;
-  time_t start_time;
-  time_t end_time;
   Time time;
   int score_id;
   Score scores[SCORES_DIM];
   unsigned int scores_dim = SCORES_DIM;
 
-  score_id = row_dim * 100 + col_dim;
+  highscore_get_id(&score_id, row_dim, col_dim);
 #if 0
   fprintf(stderr, "score_id: %d\n", score_id);
 #endif
@@ -232,7 +255,16 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
 
   if (*result == GRIDS_WON)
   {
+    char *name;
+    scores_dim = SCORES_DIM;
+    highscore_get_highscores(scores, &scores_dim, score_id);
+    interface_new_score_screen(&name, scores, scores_dim);
+    highscore_destroy(scores, scores_dim);
+
+    #if 0
     highscore_add_score(score_id, time, "\0");
+    #endif
+    highscore_add_score(score_id, time, name);
     scores_dim = SCORES_DIM;
     highscore_get_highscores(scores, &scores_dim, score_id);
     interface_print_scores(scores, scores_dim);
@@ -241,6 +273,41 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
 
 
   grid_destroy(&grid, row_dim, col_dim);
+
+  return OK;
+}
+
+int menu_highscores(void)
+{
+  char *(choices[]) = {"Small", "Medium", "Large"};
+  int number_of_choices = sizeof(choices) / sizeof(*choices);
+  char *title = "Choose the size";
+  int retval;
+  int result;
+  int row_dim, col_dim, bombs;
+  int score_id;
+
+  retval = interface_screen_choices(&result, choices, number_of_choices, title);
+  return_if_error(retval);
+
+  retval = grid_get_data_from_id(&row_dim, &col_dim, &bombs, result);
+  return_if_error(retval); 
+
+  highscore_get_id(&score_id, row_dim, col_dim);
+  print_highscores(score_id);
+  
+
+  return OK;
+}
+
+int print_highscores(int score_id)
+{
+  Score scores[SCORES_DIM];
+  unsigned int scores_dim = SCORES_DIM;
+
+  highscore_get_highscores(scores, &scores_dim, score_id);
+  interface_print_scores(scores, scores_dim);
+  highscore_destroy(scores, scores_dim);
 
   return OK;
 }
