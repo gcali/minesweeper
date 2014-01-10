@@ -256,15 +256,21 @@ int new_game(int *result, int row_dim, int col_dim, int bombs)
   if (*result == GRIDS_WON)
   {
     char *name;
+    int is_top;
     scores_dim = SCORES_DIM;
-    highscore_get_highscores(scores, &scores_dim, score_id);
-    interface_new_score_screen(&name, scores, scores_dim);
-    highscore_destroy(scores, scores_dim);
+    
+    highscore_is_score_top(&is_top, score_id, time, scores_dim);
+    if (is_top)
+    {
+      highscore_get_highscores(scores, &scores_dim, score_id);
+      interface_new_score_screen(&name, scores, scores_dim);
+      highscore_destroy(scores, scores_dim);
+      highscore_add_score(score_id, time, name);
+    }
 
     #if 0
     highscore_add_score(score_id, time, "\0");
     #endif
-    highscore_add_score(score_id, time, name);
     scores_dim = SCORES_DIM;
     highscore_get_highscores(scores, &scores_dim, score_id);
     interface_print_scores(scores, scores_dim);

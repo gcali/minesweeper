@@ -27,6 +27,7 @@ int highscore_destroy(Score array[], unsigned int nmemb);
 int highscore_get_highscores(Score *array, unsigned int *nmemb, int id);
 int highscore_add_score(int id, Time time, char *name);
 int highscore_add_score_struct(Score score);
+int highscore_is_score_top(int *result, int id, Time time, int top);
 
 int highscore_get_id(int *id, int row_dim, int col_dim);
 

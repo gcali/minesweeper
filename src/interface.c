@@ -424,9 +424,14 @@ int interface_new_score_screen(char **name, Score array[], unsigned int dim)
   
   interface_w_print_scores(wscores, array, dim); 
 
-  winput = newwin(1, COLS - interface_left_margin,
-                  interface_up_margin + 12, interface_left_margin);
+  winput = newwin(2, COLS - interface_left_margin,
+                  interface_up_margin + 12 + 1, interface_left_margin);
   wclear(winput);
+  wmove(winput, 0, 0);
+  wprintw(winput, "Insert your name\n");
+  wmove(winput, 1, 0);
+  waddch(winput, ' ' | A_STANDOUT);
+  wrefresh(winput);
   i = 0;
   while ((c = getch()) != '\r' && c != KEY_ENTER && c != '\n')
   {
@@ -435,19 +440,22 @@ int interface_new_score_screen(char **name, Score array[], unsigned int dim)
       case KEY_BACKSPACE:
         if (i > 0)
         {
-          i--;
-          wmove(winput, 0, i);
+          wmove(winput, 1, i);
           waddch(winput, ' ');
+          i--;
+          wmove(winput, 1, i);
+          waddch(winput, ' ' | A_STANDOUT);
         }
         break;
 
       default:
         if (i < COLS - interface_left_margin)
         {
-          wmove(winput, 0, i);
+          wmove(winput, 1, i);
           waddch(winput, c);
           line[i] = c;
           i++;
+          waddch(winput, ' ' | A_STANDOUT);
         }
         break;
     }

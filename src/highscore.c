@@ -210,6 +210,26 @@ int highscore_add_score_struct(Score score)
   return OK;
 }
 
+int highscore_is_score_top(int *result, int id, Time time, int top)
+{
+  int i;
+  List aux_list;
+  aux_list = score_list;
+  i = 0;
+  while (aux_list != NULL &&
+         aux_list->score.id <= id &&
+         highscore_std_cmp(aux_list->score.time, time) <= 0)
+  {
+    aux_list = aux_list->next;
+    if (aux_list->score.id == id)
+      i++;
+  }
+
+  *result = i < top;
+
+  return OK;
+}
+
 int highscore_print_debug()
 {
   List work_list;
