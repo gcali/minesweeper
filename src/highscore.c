@@ -220,9 +220,9 @@ int highscore_is_score_top(int *result, int id, Time time, int top)
          aux_list->score.id <= id &&
          highscore_std_cmp(aux_list->score.time, time) <= 0)
   {
-    aux_list = aux_list->next;
     if (aux_list->score.id == id)
       i++;
+    aux_list = aux_list->next;
   }
 
   *result = i < top;
