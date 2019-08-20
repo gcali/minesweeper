@@ -25,7 +25,6 @@ $(NAME): $(OBJECTS)
 $(ODIR)/%.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-
 $(ODIR)/%.o: error.h
 
 $(ODIR)/main.o: interface.h grid.h highscore.h timer.h
