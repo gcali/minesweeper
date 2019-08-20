@@ -696,7 +696,7 @@ static int interface_w_print_grid_line(WINDOW *wgrid, int col_dim, Grid grid, in
     }
     else if (is_attr_on(cell, BOMB))
     {
-      c = ACS_DIAMOND;
+      c = ACS_HLINE;
       attribute = COLOR_PAIR(COL_BOMB);
     }
     else
